@@ -354,29 +354,29 @@ TPOT makes use of `sklearn.model_selection.cross_val_score` for evaluating pipel
 
 2. You can pass the callable object/function with signature `scorer(estimator, X, y)`, where `estimator` is trained estimator to use for scoring, `X` are features that will be passed to `estimator.predict` and `y` are target values for `X`. To do this, you should implement your own function. See the example below for further explanation.
 
-  ```Python
-  from tpot import TPOTClassifier
-  from sklearn.datasets import load_digits
-  from sklearn.model_selection import train_test_split
-  from sklearn.metrics.scorer import make_scorer
+```Python
+from tpot import TPOTClassifier
+from sklearn.datasets import load_digits
+from sklearn.model_selection import train_test_split
+from sklearn.metrics.scorer import make_scorer
 
-  digits = load_digits()
-  X_train, X_test, y_train, y_test = train_test_split(digits.data, digits.target,
+digits = load_digits()
+X_train, X_test, y_train, y_test = train_test_split(digits.data, digits.target,
                                                       train_size=0.75, test_size=0.25)
-  # Make a custom metric function
-  def my_custom_accuracy(y_true, y_pred):
-      return float(sum(y_pred == y_true)) / len(y_true)
+# Make a custom metric function
+def my_custom_accuracy(y_true, y_pred):
+    return float(sum(y_pred == y_true)) / len(y_true)
 
-  # Make a custom a scorer from the custom metric function
-  # Note: greater_is_better=False in make_scorer below would mean that the scoring function should be minimized.
-  my_custom_scorer = make_scorer(my_custom_accuracy, greater_is_better=True)
+# Make a custom a scorer from the custom metric function
+# Note: greater_is_better=False in make_scorer below would mean that the scoring function should be minimized.
+my_custom_scorer = make_scorer(my_custom_accuracy, greater_is_better=True)
 
-  tpot = TPOTClassifier(generations=5, population_size=20, verbosity=2,
-                        scoring=my_custom_scorer)
-  tpot.fit(X_train, y_train)
-  print(tpot.score(X_test, y_test))
-  tpot.export('tpot_mnist_pipeline.py')
-  ```
+tpot = TPOTClassifier(generations=5, population_size=20, verbosity=2,
+                      scoring=my_custom_scorer)
+tpot.fit(X_train, y_train)
+print(tpot.score(X_test, y_test))
+tpot.export('tpot_mnist_pipeline.py')
+```
 
 3. You can pass a metric function with the signature `score_func(y_true, y_pred)` (e.g. `my_custom_accuracy` in the example above), where `y_true` are the true target values and `y_pred` are the predicted target values from an estimator. To do this, you should implement your own function. See the example above for further explanation. TPOT assumes that any function with "error" or "loss" in the function name is meant to be minimized (`greater_is_better=False` in [`make_scorer`](http://scikit-learn.org/stable/modules/generated/sklearn.metrics.make_scorer.html)), whereas any other functions will be maximized. This scoring type was deprecated in version 0.9.1 and will be removed in version 0.11.
 
